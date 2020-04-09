@@ -6,6 +6,9 @@ import SignupScreen from '../screens/Auth/SignupScreen';
 
 const authStack = createStackNavigator();
 
+// This is the navigation stack for the Auth screens using the
+// latest react navigation library
+
 function AuthNav() {
     return(
         <NavigationContainer>

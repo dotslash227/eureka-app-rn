@@ -6,6 +6,8 @@ import HomeScreen from '../screens/HomeScreen';
 
 const appNavStack = createStackNavigator();
 
+// This is the navigation stack for the main app
+
 function AppStack() {
     return(
         <NavigationContainer>
