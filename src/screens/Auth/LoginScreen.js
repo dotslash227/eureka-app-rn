@@ -3,6 +3,8 @@ import {Text, StyleSheet, ImageBackground} from 'react-native';
 import Background from "../../assets/bay.jpg";
 import {Container, Content, Form, Item, Input, Label, Button} from 'native-base';
 import axios from "axios";
+import {userLogin} from '../../actions/authActions';
+import {connect} from 'react-redux';
 
 // ToDo: Login button should be disabled by default
 // And should only enable when the username and password is input
@@ -14,8 +16,15 @@ class LoginScreen extends React.Component{
         this.state = {
             'username':'',
             'password': '',
-            'loginFlag': true
+            'loginFlag': true,
+            'errors':[]
         }        
+    }
+
+    componentDidMount(){
+        const {navigation} = this.props;
+        if(this.props.auth.id) navigation.navigate("Home")
+        (this.state.errors) && alert(this.state.errors);
     }
 
     handleInput(data, inputId){
@@ -37,14 +46,14 @@ class LoginScreen extends React.Component{
         // Method to submit details for login and retrieve user's profile info
         // Uses GraphQL
         // ToDo: Connect it with Redux
-        alert("trying to log in the user");
+        alert("We are trying to login. Please wait.");
         const {username, password} = this.state;
         let data = {
             "query": `
             mutation{
                 user:login(username:"${username}", password:"${password}"){
                     profile{
-                        user{id, username}
+                        user{id, username, firstName, lastName, email}
                     }
                 }
             }`            
@@ -55,11 +64,14 @@ class LoginScreen extends React.Component{
             url: 'http://localhost:8000/graphql',
             data: data
         })
-        .then((response)=>{
-            console.log(response);            
+        .then((response)=>{            
+            let userData = response.data.data.user.profile.user;            
+            this.props.userLogin(userData);            
+            this.props.navigation.navigate("Home");
         })
         .catch((error)=>{
-            console.log(error);
+            let errors = error.message;
+            this.setState({errors});
         })
     }
 
@@ -108,5 +120,19 @@ const styles = StyleSheet.create({
     }    
 })
 
-export default LoginScreen;
+const mapStateToProps = (state) =>{
+    return{
+        auth: state.auth
+    }
+}
+
+const mapDispatchToProps = (dispatch) =>{
+    return{
+        userLogin: (user)=>{
+            dispatch(userLogin(user));
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);
 

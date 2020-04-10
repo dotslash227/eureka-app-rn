@@ -3,7 +3,21 @@ import React from 'react';
 import LoginScreen from './src/screens/Auth/LoginScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import AuthNav from './src/routers/Auth';
-import AppStack from './src/routers/AppStack';
+// Start Reducers Importing and other redux libraries
+import {createStore, combineReducers} from 'redux';
+import {Provider} from 'react-redux';
+import {authReducer} from './src/reducers/authReducer';
+// End reducers import
+
+console.disableYellowBox = true;
+
+// Some Redux Magic
+const rootReducer = combineReducers({
+  auth:authReducer
+})
+const store = createStore(rootReducer)
+// End of redux magic
+
 
 class App extends React.Component{
 
@@ -15,12 +29,11 @@ class App extends React.Component{
   }
 
   render(){
-    if(this.state.isLoggedIn){
-      return <AppStack />
-    }
-    else{
-      return  <AuthNav />
-    }
+    return(
+      <Provider store={store}>
+        <AuthNav />
+      </Provider>    
+    )    
   }
 
   // AppStack -> Is the main app's navigation
