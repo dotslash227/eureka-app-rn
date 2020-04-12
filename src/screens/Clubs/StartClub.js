@@ -86,14 +86,13 @@ class StartClub extends React.Component{
             url:"http://localhost:8000/graphql",
             data:{"query":query}            
         })
-        .then((response)=>{
-            console.log(response);
-            if(response.data.errors) alert(response.data.errors[0].message);
-            else alert("Club has been created");
+        .then((response)=>{            
+            // In GraphQL, erros are passed into response.data.errors as multiple array's.
+            if(response.data.errors) alert(response.data.errors[0].message); 
+            else alert("Club has been created");             
         })
         .catch((error)=>{
-            console.log(error);
-            alert(error.message);
+            console.log(error);            
         })
     }
 
@@ -175,9 +174,7 @@ const styles = StyleSheet.create({
     },
     h1:{
         color:"white",
-        fontSize: 30,        
-        // alignSelf:"center",
-        // textAlign:"center",
+        fontSize: 30,                
         marginTop:-5
     },
     backgroundImage:{        
