@@ -132,7 +132,7 @@ class HomeScreen extends React.Component{
                                         <Text style={styles.buttonTextActionHome}>Start A Club</Text>
                                     </View>
                                 </Col>
-                                <Col>
+                                <Col onPress={()=>this.props.navigation.navigate("joinClub")}>
                                     <View style={styles.actionHomeButton}>
                                         <Text style={styles.buttonTextActionHome}>Join A Club</Text>
                                     </View>
