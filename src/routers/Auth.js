@@ -13,7 +13,7 @@ const authStack = createStackNavigator();
 function AuthNav() {
     return(
         <NavigationContainer>
-            <authStack.Navigator initialRouteName="Login">
+            <authStack.Navigator initialRouteName="Login" headerMode="none">
                 <authStack.Screen name="Login" component={LoginScreen} />
                 <authStack.Screen name="Signup" component={SignupScreen} />
                 <authStack.Screen name="Home" component={HomeScreen} />

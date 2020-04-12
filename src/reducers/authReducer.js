@@ -1,6 +1,6 @@
 // Initial auth state
 const authState = {
-    id: '',
+    id: 'test',
     firstName: '',
     lastName: '',
     email: '',

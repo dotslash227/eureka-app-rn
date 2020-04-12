@@ -1,6 +1,7 @@
 import React from 'react';
 import {Text, StyleSheet} from 'react-native';
 import {Button, Form, Input, Label, Item, Content, Container} from 'native-base';
+import HeaderBar from "../../components/HeaderBar";
 import axios from "axios";
 
 // Screen to handle the signup of a new user
@@ -82,7 +83,11 @@ class SignupScreen extends React.Component{
     render(){
         return(
             <Container>
+                <HeaderBar title="Signup" back {...this.props} />
                 <Content padder>
+                    <Text style={{marginBottom:10,textAlign:"center"}}>Please fill up the form below, all fields are compulsory. You will be sent
+                        an confirmation email, to confirm your identity.
+                    </Text>
                     <Form>
                         <Item stackedLabel>
                             <Label>First Name</Label>
@@ -137,6 +142,9 @@ class SignupScreen extends React.Component{
                     <Button style={styles.signupButton} block onPress={()=>this.handleSubmit()}>
                         <Text style={styles.signupButtonText}>Signup</Text>
                     </Button>
+                    <Text style={{marginTop:10,textAlign:"center", fontSize:12}}>
+                        By pressing the submit button, you accept our Terms and Conditions, available on our website at Eureka Quiz App Website.
+                    </Text>
                 </Content>
             </Container>
         )

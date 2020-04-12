@@ -17,14 +17,18 @@ class LoginScreen extends React.Component{
             'username':'',
             'password': '',
             'loginFlag': true,
-            'errors':[]
+            'errors':''
         }        
     }
 
     componentDidMount(){
-        const {navigation} = this.props;
-        if(this.props.auth.id) navigation.navigate("Home")
-        (this.state.errors) && alert(this.state.errors);
+        // const {navigation} = this.props;
+        if(this.props.auth.id){
+            this.props.navigation.navigate("Home");
+        }
+        if(this.state.errors){
+            alert(this.state.errors);
+        }        
     }
 
     handleInput(data, inputId){
