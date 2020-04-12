@@ -24,7 +24,7 @@ class LoginScreen extends React.Component{
     componentDidMount(){
         // const {navigation} = this.props;
         if(this.props.auth.id){
-            this.props.navigation.navigate("Home");
+            this.props.navigation.navigate("App");
         }
         if(this.state.errors){
             alert(this.state.errors);
@@ -71,7 +71,7 @@ class LoginScreen extends React.Component{
         .then((response)=>{            
             let userData = response.data.data.user.profile.user;            
             this.props.userLogin(userData);            
-            this.props.navigation.navigate("Home");
+            this.props.navigation.navigate("App");
         })
         .catch((error)=>{
             let errors = error.message;

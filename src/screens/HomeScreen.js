@@ -127,7 +127,7 @@ class HomeScreen extends React.Component{
                         {/* Start of last 2 buttons */}
                         <Grid>
                             <Row>
-                                <Col>
+                                <Col onPress={()=>this.props.navigation.navigate("startClub")}>
                                     <View style={styles.actionHomeButton}>
                                         <Text style={styles.buttonTextActionHome}>Start A Club</Text>
                                     </View>
@@ -193,8 +193,7 @@ const styles = StyleSheet.create({
     },
     backgroundImage:{        
         flex: 1,
-        resizeMode: "cover",
-        height:"100%",
+        resizeMode: "cover",        
         opacity: 0.85
     },
     container:{

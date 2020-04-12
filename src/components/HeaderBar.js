@@ -1,6 +1,6 @@
 import React from 'react';
 import {Header, Body, Left, Right, Icon, Title} from 'native-base';
-import {Text} from 'react-native';
+import {Text, StyleSheet} from 'react-native';
 
 class HeaderBar extends React.Component{
     constructor(props){

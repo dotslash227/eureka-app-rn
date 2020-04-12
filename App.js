@@ -21,13 +21,6 @@ const store = createStore(rootReducer)
 
 class App extends React.Component{
 
-  constructor(props){
-    super(props);
-    this.state = {
-      isLoggedIn: false
-    }
-  }
-
   render(){
     return(
       <Provider store={store}>
