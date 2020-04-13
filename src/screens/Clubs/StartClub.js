@@ -131,7 +131,7 @@ class StartClub extends React.Component{
                                     selectedValue={this.state.selectedCategoryId}
                                     onValueChange={this.handlePickerInput.bind(this)}
                                 >
-                                    {(this.state.categories).map((item)=>{
+                                    {this.state.categories.map((item)=>{
                                         return <Picker.Item label={item.name} key={item.id} value={item.id} />
                                     })}
                                 </Picker>
