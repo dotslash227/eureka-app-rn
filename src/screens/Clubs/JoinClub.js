@@ -69,6 +69,84 @@ class JoinClub extends React.Component{
         this.setState({selectedCategoryId:categoryId}, ()=>this.fetchClubs());        
     }    
 
+    showJoinButton(clubdId){
+        // Method to show a join button for a club
+        // The method will check if there is a request pending or not for the same club and user
+        // and then show a button with a text accordingly
+        // Problem: The text is not appearing, a check is being failed and not working
+        // Have to see that and fix it.
+
+        const {id} = this.props.auth;
+        let status = "";
+        let query = `
+        query{
+            status:joinStatus(clubId:${clubdId}, senderId:${id}){
+              status
+            }
+          }
+        `
+        axios({
+            method:"post",
+            url:"http://localhost:8000/graphql",
+            data:{"query":query}
+        })
+        .then((response)=>{
+            console.log(response.data.data);            
+            status = response.data.data.status.status;                                    
+        })
+        .catch((error)=>console.log(error));
+        if(status=="showjoin"){
+            return(
+                <Button 
+                    block 
+                    style={styles.joinButton} 
+                    small bordered danger 
+                    onPress={()=>this.handleJoinButton(clubId)}
+                >
+                    <Text style={{color:"black"}}>Join</Text>
+                </Button>
+            )                
+        }
+        else{
+            return(
+                <Button 
+                    block 
+                    disabled
+                    style={styles.joinButton} 
+                    small 
+                    // onPress={()=>this.handleJoinButton(item.id)}
+                >
+                    <Text style={{color:"white"}}>{status}</Text>
+                </Button>
+            )
+        }
+    }
+
+    handleJoinButton(clubId){
+        // Method to handle the join button click for a club        
+        const {id} = this.props.auth;
+        let query = `
+        mutation{
+            joinRequest:createClubJoinrequest(clubId:${clubId}, senderId:${id}){
+              joinRequest{
+                id, sender{id, username}
+              }
+            }
+          }
+        `        
+        axios({
+            method:"post",
+            url: "http://localhost:8000/graphql",
+            data: {"query":query}
+        })
+        .then((response)=>{
+            console.log(response);
+            if(response.data.errors) alert(response.data.errors[0].message);
+            else alert("Succesfull request has been sent to the admin and creator of this club");
+        })
+        .catch((error)=>console.log(error));
+    }
+
     render(){
         return(
             <Container>         
@@ -106,17 +184,15 @@ class JoinClub extends React.Component{
                                     <ListItem avatar>
                                         <Left>
                                             <Thumbnail 
-                                                source={{uri:"https://img.lovepik.com/original_origin_pic/18/02/28/3a838902a342ab19741a0c0f54bc756b.png_wh860.png"}} 
+                                                source={{uri:"https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/eb/eb2abf6a3f63074148d4d71ca2a7f01dfc0d66ef_full.jpg"}} 
                                             />
                                         </Left>
                                         <Body>
                                             <Text style={{fontSize:12}}>Name of the Club : {item.name}</Text>
                                             <Text style={{fontSize:12}}>Club Creator: {item.creator.username} </Text>                                            
                                         </Body>
-                                        <Right style={{borderBottomWidth:0}}>
-                                            <Button block style={{padding:10, marginTop:8}} small bordered danger>
-                                                <Text style={{color:"black"}}>Join</Text>
-                                            </Button>
+                                        <Right style={{borderBottomWidth:0}}>                                            
+                                            {this.showJoinButton(item.id)}                                            
                                         </Right>
                                     </ListItem>
                                 )
@@ -136,6 +212,10 @@ const mapStateToProps = (state) =>{
 }
 
 const styles = StyleSheet.create({
+    joinButton:{
+        padding:10, 
+        marginTop:8
+    },
     infoText:{
         marginTop:5, 
         justifyContent:"center", 
