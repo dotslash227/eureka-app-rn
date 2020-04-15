@@ -4,7 +4,7 @@ import {Text, View, ImageBackground, StyleSheet} from 'react-native';
 import HeaderBar from "../../components/HeaderBar";
 import axios from 'axios';
 import {connect} from 'react-redux';
-
+import {getStatus} from "../../services/joinclub";
 
 // Screen to allow a user to join a club
 // ToDo: Actions for the Join Now Button
@@ -17,7 +17,7 @@ class JoinClub extends React.Component{
             selectedCategoryId:'',
             clubs:[]
         }        
-    }
+    }    
 
     componentWillMount(){
         // When the component/screen loads, categories list has to be fetched from the server
@@ -46,11 +46,10 @@ class JoinClub extends React.Component{
         let query = `
         query{
             clubs:clubsBycategory(categoryId:${this.state.selectedCategoryId}){
-              name, id, creator{username}
+              name,status(userId:${this.props.auth.id}), id, creator{id, username}
             }
-        }
+          }
         `        
-        console.log(query);
         axios({
             method:"post",
             url:"http://localhost:8000/graphql",
@@ -58,7 +57,7 @@ class JoinClub extends React.Component{
         })
         .then((response)=>{
             let clubs = response.data.data.clubs;
-            this.setState({clubs}, ()=>console.log(this.state.clubs));
+            this.setState({clubs});
         })
         .catch((error)=>console.log(error));
     }
@@ -69,45 +68,20 @@ class JoinClub extends React.Component{
         this.setState({selectedCategoryId:categoryId}, ()=>this.fetchClubs());        
     }    
 
-    showJoinButton(clubdId){
-        // Method to show a join button for a club
-        // The method will check if there is a request pending or not for the same club and user
-        // and then show a button with a text accordingly
-        // Problem: The text is not appearing, a check is being failed and not working
-        // Have to see that and fix it.
-
-        const {id} = this.props.auth;
-        let status = "";
-        let query = `
-        query{
-            status:joinStatus(clubId:${clubdId}, senderId:${id}){
-              status
-            }
-          }
-        `
-        axios({
-            method:"post",
-            url:"http://localhost:8000/graphql",
-            data:{"query":query}
-        })
-        .then((response)=>{
-            console.log(response.data.data);            
-            status = response.data.data.status.status;                                    
-        })
-        .catch((error)=>console.log(error));
-        if(status=="showjoin"){
+    joinButton(club, index){                                              
+        if(club.status=="ok"){
             return(
                 <Button 
                     block 
                     style={styles.joinButton} 
                     small bordered danger 
-                    onPress={()=>this.handleJoinButton(clubId)}
+                    onPress={()=>this.handleJoinButton(club.id, index)}
                 >
                     <Text style={{color:"black"}}>Join</Text>
                 </Button>
             )                
         }
-        else{
+        else{            
             return(
                 <Button 
                     block 
@@ -116,15 +90,16 @@ class JoinClub extends React.Component{
                     small 
                     // onPress={()=>this.handleJoinButton(item.id)}
                 >
-                    <Text style={{color:"white"}}>{status}</Text>
+                    <Text style={{color:"white"}}>{club.status}</Text>
                 </Button>
             )
         }
     }
 
-    handleJoinButton(clubId){
-        // Method to handle the join button click for a club        
+    handleJoinButton(clubId, index){
+        // Method to handle the join button click for a club            
         const {id} = this.props.auth;
+        const {clubs} = this.state;
         let query = `
         mutation{
             joinRequest:createClubJoinrequest(clubId:${clubId}, senderId:${id}){
@@ -139,10 +114,13 @@ class JoinClub extends React.Component{
             url: "http://localhost:8000/graphql",
             data: {"query":query}
         })
-        .then((response)=>{
-            console.log(response);
+        .then((response)=>{            
             if(response.data.errors) alert(response.data.errors[0].message);
-            else alert("Succesfull request has been sent to the admin and creator of this club");
+            else {                
+                alert("Succesfull request has been sent to the admin and creator of this club");
+                clubs[index].status = "Pending Request";
+                this.setState({clubs});
+            }
         })
         .catch((error)=>console.log(error));
     }
@@ -179,21 +157,21 @@ class JoinClub extends React.Component{
                             Please select a category from the above dropdown. List of clubs will appear below.
                         </Text>
                         <List>                                                    
-                            {this.state.clubs.map((item)=>{
-                                return(
-                                    <ListItem avatar>
+                            {this.state.clubs.map((item, index)=>{                
+                                return (
+                                    <ListItem avatar key={item.id}>
                                         <Left>
                                             <Thumbnail 
                                                 source={{uri:"https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/eb/eb2abf6a3f63074148d4d71ca2a7f01dfc0d66ef_full.jpg"}} 
                                             />
-                                        </Left>
+                                        </Left>      
                                         <Body>
-                                            <Text style={{fontSize:12}}>Name of the Club : {item.name}</Text>
-                                            <Text style={{fontSize:12}}>Club Creator: {item.creator.username} </Text>                                            
+                                            <Text style={{fontSize:12}}>{item.name}</Text>
+                                            <Text style={{fontSize:12}}>Club owner: {item.creator.username}</Text>
                                         </Body>
-                                        <Right style={{borderBottomWidth:0}}>                                            
-                                            {this.showJoinButton(item.id)}                                            
-                                        </Right>
+                                        <Right>
+                                            {this.joinButton(item, index)}
+                                        </Right>                  
                                     </ListItem>
                                 )
                             })}
