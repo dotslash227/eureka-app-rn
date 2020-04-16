@@ -93,17 +93,17 @@ class JoinClub extends React.Component{
         if(this.state.clubs.length > 0){
             return this.state.clubs.map((item, index)=>{                
                 return (
-                    <ListItem avatar key={item.id}>
+                    <ListItem avatar key={item.id} style={{borderBottomColor:"white", borderBottomWidth:1, paddingBottom:10}}>
                         <Left>
                             <Thumbnail 
                                 source={{uri:"https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/eb/eb2abf6a3f63074148d4d71ca2a7f01dfc0d66ef_full.jpg"}} 
                             />
                         </Left>      
-                        <Body>
-                            <Text style={{fontSize:12}}>{item.name}</Text>
-                            <Text style={{fontSize:12}}>Club owner: {item.creator.username}</Text>
+                        <Body style={{borderBottomWidth:0}}>
+                            <Text style={{fontSize:12, color:"white"}}>{item.name}</Text>
+                            <Text style={{fontSize:12, color:"white"}}>Club owner: {item.creator.username}</Text>
                         </Body>
-                        <Right>
+                        <Right style={{borderBottomWidth:0}}>
                             {this.joinButton(item, index)}
                         </Right>                  
                     </ListItem>
@@ -140,7 +140,7 @@ class JoinClub extends React.Component{
                     small bordered danger 
                     onPress={()=>this.handleJoinButton(club.id, index)}
                 >
-                    <Text style={{color:"black"}}>Join</Text>
+                    <Text style={{color:"white"}}>Join</Text>
                 </Button>
             )                
         }
@@ -189,45 +189,49 @@ class JoinClub extends React.Component{
 
     render(){
         return(
-            <Container>         
-                <HeaderBar title="Join A Club" back {...this.props} />
-                <Content padder>                                        
-                    <Form>                                                        
-                        <Item picker>                            
-                            {/* Picker takes list from state.categories, that will come during componentWillMount */}
-                            <Picker
-                                mode="dropdown"
-                                iosIcon={<Icon name="arrow-down" />}
-                                style={{width:"80%"}}                                    
-                                placeholder="Choose A Category"
-                                placeholderStyle={{color:"black"}}
-                                placeholderIconColor={{color:"white"}}
-                                selectedValue={this.state.selectedCategoryId}
-                                onValueChange={this.handlePickerInput.bind(this)}
-                            >
-                                {(this.state.categories).map((item)=>{
-                                    return <Picker.Item label={item.name} value={item.id} key={item.id} />
-                                })}
-                            </Picker>                            
-                        </Item>                                 
-                        <Item>                            
-                            <Input 
-                                placeholder="And / Or Enter name" 
-                                autoCorrect={false}
-                                autoCapitalize="none"
-                                onChangeText={(text)=>this.handleNameInput(text)}
-                            />
-                        </Item>                                                                                                         
-                    </Form>
-                    <View style={{marginTop:20}}>                        
-                        <Text style={styles.infoText}>
-                            Please select a category from the above dropdown. List of clubs will appear below.
-                        </Text>
-                        <List>                                                    
-                            {this.renderClubs()}
-                        </List>                        
-                    </View>
-                </Content>
+            <Container style={styles.container}>   
+                <ImageBackground source={require("../../assets/rome.png")} style={styles.backgroundImage}>                    
+                    <Content padder style={styles.overlay}>
+                        <HeaderBar title="Join A Club" back {...this.props} />
+                        <Form>                                                        
+                            <Item picker>                            
+                                {/* Picker takes list from state.categories, that will come during componentWillMount */}
+                                <Picker
+                                    mode="dropdown"
+                                    iosIcon={<Icon name="arrow-down" />}
+                                    style={{width:"80%", color:"white"}}
+                                    placeholder="Choose A Category"
+                                    placeholderStyle={{color:"white"}}
+                                    placeholderIconColor={{color:"white"}}
+                                    selectedValue={this.state.selectedCategoryId}
+                                    onValueChange={this.handlePickerInput.bind(this)}                                    
+                                >
+                                    {(this.state.categories).map((item)=>{
+                                        return <Picker.Item label={item.name} value={item.id} key={item.id} />
+                                    })}
+                                </Picker>                            
+                            </Item>                                 
+                            <Item>                            
+                                <Input 
+                                    placeholder="And / Or Enter name" 
+                                    autoCorrect={false}
+                                    autoCapitalize="none"
+                                    placeholderStyle={{color:"white"}}
+                                    style={{color:"white"}}
+                                    onChangeText={(text)=>this.handleNameInput(text)}
+                                />
+                            </Item>                                                                                                         
+                        </Form>
+                        <View style={{marginTop:20}}>                        
+                            <Text style={styles.infoText}>
+                                Please select a category from the above dropdown. List of clubs will appear below.
+                            </Text>
+                            <List>                                                    
+                                {this.renderClubs()}
+                            </List>                        
+                        </View>
+                    </Content>
+                </ImageBackground>
             </Container>
         )
     }
@@ -249,24 +253,30 @@ const styles = StyleSheet.create({
     },
     joinButton:{
         padding:10, 
-        marginTop:8
+        marginTop:8,        
     },
     infoText:{
         marginTop:5, 
         justifyContent:"center", 
         alignSelf:"center", 
-        borderBottomColor:"black", 
+        borderBottomColor:"white", 
         borderBottomWidth:1, 
-        marginBottom:10
+        marginBottom:10,
+        color:"white",
+        fontWeight:"bold"
     },
-    backgroundImage:{        
+    backgroundImage:{                
         flex: 1,
         resizeMode: "cover",        
-        opacity: 0.85
+        opacity: 1
     },
     container:{
-        backgroundColor:"black",
-        opacity: 0.8
+        // backgroundColor:"black",
+        // opacity: 1.0         
+    },
+    overlay:{
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.5)',
     }
 })
 
