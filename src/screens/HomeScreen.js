@@ -1,7 +1,8 @@
 import React from 'react';
 import {Text, ImageBackground, StyleSheet, View, Image} from 'react-native';
 import {Content, Container, Body, Left, Right, Grid, Row, Col, Icon, Card, CardItem} from 'native-base';
-
+import axios from 'axios';
+import {connect} from 'react-redux';
 
 // A lot of work has to be done on this screen after redux configuration
 // Main homepage, styling done, functioanlities and integration with
@@ -10,7 +11,28 @@ import {Content, Container, Body, Left, Right, Grid, Row, Col, Icon, Card, CardI
 class HomeScreen extends React.Component{
     constructor(props){
         super(props);
-        this.state = {}
+        this.state = {
+            quizes:[]
+        }
+    }
+
+    componentDidMount(){                
+        let query = `
+        query{
+            quizes:newQuizesByUser(userId:1){
+              id, name, club{name}
+            }
+          }
+        `  
+        axios({
+            method:"post",
+            url:"http://localhost:8000/graphql",
+            data:{query:query}
+        })
+        .then((response)=>{
+            this.setState({quizes:response.data.data.quizes});
+        })  
+        .catch((error)=>console.log(error))
     }
 
     render(){
@@ -45,83 +67,21 @@ class HomeScreen extends React.Component{
                         {/* End of heading title and filter icon */}
                         {/* Start of cards for showing upcming quizzes */}
                         <Content style={{maxHeight:400, marginBottom:35}}>
-                            <Card style={{opacity:0.8}}>
-                                <CardItem style={styles.quizzesListCard}>
-                                    <Body>
-                                        <Text style={styles.cardText1}>The Monday Open</Text>
-                                        <Text style={styles.cardText2}>Kutub Quizzers</Text>
-                                    </Body>
-                                    <Right>
-                                        <Text style={styles.cardText2}>1 Hr 20 mins</Text>
-                                    </Right>
-                                </CardItem>
-                            </Card>
-                            <Card style={{opacity:0.8}}>
-                                <CardItem style={styles.quizzesListCard}>
-                                    <Body>
-                                        <Text style={styles.cardText1}>The Monday Open</Text>
-                                        <Text style={styles.cardText2}>Kutub Quizzers</Text>
-                                    </Body>
-                                    <Right>
-                                        <Text style={styles.cardText2}>1 Hr 20 mins</Text>
-                                    </Right>
-                                </CardItem>
-                            </Card>
-                            <Card style={{opacity:0.8}}>
-                                <CardItem style={styles.quizzesListCard}>
-                                    <Body>
-                                        <Text style={styles.cardText1}>The Monday Open</Text>
-                                        <Text style={styles.cardText2}>Kutub Quizzers</Text>
-                                    </Body>
-                                    <Right>
-                                        <Text style={styles.cardText2}>1 Hr 20 mins</Text>
-                                    </Right>
-                                </CardItem>
-                            </Card>
-                            <Card style={{opacity:0.8}}>
-                                <CardItem style={styles.quizzesListCard}>
-                                    <Body>
-                                        <Text style={styles.cardText1}>The Monday Open</Text>
-                                        <Text style={styles.cardText2}>Kutub Quizzers</Text>
-                                    </Body>
-                                    <Right>
-                                        <Text style={styles.cardText2}>1 Hr 20 mins</Text>
-                                    </Right>
-                                </CardItem>
-                            </Card>
-                            <Card style={{opacity:0.8}}>
-                                <CardItem style={styles.quizzesListCard}>
-                                    <Body>
-                                        <Text style={styles.cardText1}>The Monday Open</Text>
-                                        <Text style={styles.cardText2}>Kutub Quizzers</Text>
-                                    </Body>
-                                    <Right>
-                                        <Text style={styles.cardText2}>1 Hr 20 mins</Text>
-                                    </Right>
-                                </CardItem>
-                            </Card>
-                            <Card style={{opacity:0.8}}>
-                                <CardItem style={styles.quizzesListCard}>
-                                    <Body>
-                                        <Text style={styles.cardText1}>The Monday Open</Text>
-                                        <Text style={styles.cardText2}>Kutub Quizzers</Text>
-                                    </Body>
-                                    <Right>
-                                        <Text style={styles.cardText2}>1 Hr 20 mins</Text>
-                                    </Right>
-                                </CardItem>
-                            </Card>
-                            <Card style={{opacity:0.8}}>
-                                <CardItem style={styles.quizzesListCard}>
-                                    <Body>
-                                        <Text style={styles.cardText1}>The Monday Open</Text>
-                                        <Text style={styles.cardText2}>Kutub Quizzers</Text>
-                                    </Body>
-                                    <Right>
-                                        <Text style={styles.cardText2}>1 Hr 20 mins</Text>
-                                    </Right>
-                                </CardItem>
-                            </Card>
+                            {(this.state.quizes).map((item,key)=>{
+                                return(
+                                    <Card style={{opacity:0.8}}>
+                                        <CardItem style={styles.quizzesListCard}>
+                                            <Body>
+                                                <Text style={styles.cardText1}>{item.name}</Text>
+                                                <Text style={styles.cardText2}>{item.club.name}</Text>
+                                            </Body>
+                                            <Right>
+                                                <Text style={styles.cardText2}>1 Hr 20 mins</Text>
+                                            </Right>
+                                        </CardItem>
+                                    </Card>
+                                )
+                            })}                                                        
                         </Content>     
                         {/*  End of upcoming quizz cards */}
                         {/* Start of last 2 buttons */}
@@ -202,4 +162,10 @@ const styles = StyleSheet.create({
     }
 })
 
-export default HomeScreen;
+const mapStateToProps = (state) =>{
+    return{
+        auth: state.auth
+    }
+}
+
+export default connect(mapStateToProps)(HomeScreen);
